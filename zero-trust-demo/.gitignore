@@ -1,0 +1,41 @@
+# Environment files
+.env
+.env.local
+.env.*.local
+
+# Secrets
+*.pem
+*.key
+*.crt
+*.p12
+certs/step/*
+!certs/step/.gitkeep
+
+# Logs
+*.log
+logs/
+
+# Node modules
+node_modules/
+
+# Build outputs
+dist/
+build/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Docker volumes data (if mounted locally)
+data/
+
+# Temporary files
+tmp/
+temp/
+*.tmp

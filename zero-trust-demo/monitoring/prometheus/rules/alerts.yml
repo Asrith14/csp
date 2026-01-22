@@ -1,0 +1,95 @@
+# Zero-Trust Security Alerts
+groups:
+  - name: security_alerts
+    rules:
+      # High authentication failure rate
+      - alert: HighAuthFailureRate
+        expr: rate(auth_attempts_total{status="failed"}[5m]) > 10
+        for: 2m
+        labels:
+          severity: warning
+        annotations:
+          summary: "High authentication failure rate detected"
+          description: "More than 10 failed auth attempts per second for 2 minutes"
+
+      # Brute force detection
+      - alert: PossibleBruteForce
+        expr: rate(auth_attempts_total{status="failed", type="login"}[1m]) > 5
+        for: 1m
+        labels:
+          severity: critical
+        annotations:
+          summary: "Possible brute force attack detected"
+          description: "More than 5 failed login attempts per minute"
+
+      # Policy denials spike
+      - alert: HighPolicyDenials
+        expr: rate(policy_decisions_total{result="deny"}[5m]) > 5
+        for: 2m
+        labels:
+          severity: warning
+        annotations:
+          summary: "High rate of policy denials"
+          description: "More than 5 policy denials per second"
+
+      # Service down
+      - alert: ServiceDown
+        expr: up == 0
+        for: 1m
+        labels:
+          severity: critical
+        annotations:
+          summary: "Service {{ $labels.job }} is down"
+          description: "{{ $labels.instance }} has been down for more than 1 minute"
+
+      # High response latency
+      - alert: HighLatency
+        expr: histogram_quantile(0.95, rate(http_request_duration_seconds_bucket[5m])) > 2
+        for: 5m
+        labels:
+          severity: warning
+        annotations:
+          summary: "High API latency detected"
+          description: "95th percentile latency is above 2 seconds"
+
+      # Database connection issues
+      - alert: DatabaseConnectionError
+        expr: rate(db_query_duration_seconds_count{error="true"}[5m]) > 0
+        for: 1m
+        labels:
+          severity: critical
+        annotations:
+          summary: "Database connection errors"
+          description: "Database queries are failing"
+
+  - name: infrastructure_alerts
+    rules:
+      # Vault sealed
+      - alert: VaultSealed
+        expr: vault_core_unsealed == 0
+        for: 0m
+        labels:
+          severity: critical
+        annotations:
+          summary: "Vault is sealed"
+          description: "HashiCorp Vault is sealed and cannot process requests"
+
+      # High memory usage
+      - alert: HighMemoryUsage
+        expr: (node_memory_MemTotal_bytes - node_memory_MemAvailable_bytes) / node_memory_MemTotal_bytes > 0.9
+        for: 5m
+        labels:
+          severity: warning
+        annotations:
+          summary: "High memory usage"
+          description: "Memory usage is above 90%"
+
+      # Certificate expiring soon
+      - alert: CertificateExpiringSoon
+        expr: (probe_ssl_earliest_cert_expiry - time()) / 86400 < 30
+        for: 1h
+        labels:
+          severity: warning
+        annotations:
+          summary: "SSL certificate expiring soon"
+          description: "Certificate will expire in less than 30 days"

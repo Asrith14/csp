@@ -1,0 +1,156 @@
+{
+  "realm": "zero-trust",
+  "enabled": true,
+  "sslRequired": "none",
+  "registrationAllowed": false,
+  "loginWithEmailAllowed": true,
+  "duplicateEmailsAllowed": false,
+  "resetPasswordAllowed": true,
+  "editUsernameAllowed": false,
+  "bruteForceProtected": true,
+  "permanentLockout": false,
+  "failureFactor": 5,
+  "accessTokenLifespan": 300,
+  "ssoSessionIdleTimeout": 1800,
+  "ssoSessionMaxLifespan": 36000,
+  "roles": {
+    "realm": [
+      {
+        "name": "admin",
+        "description": "Administrator with full access"
+      },
+      {
+        "name": "developer",
+        "description": "Developer with read/write access"
+      },
+      {
+        "name": "viewer",
+        "description": "Read-only access"
+      },
+      {
+        "name": "service-account",
+        "description": "Service-to-service communication"
+      }
+    ]
+  },
+  "groups": [
+    {
+      "name": "administrators",
+      "path": "/administrators",
+      "realmRoles": ["admin"]
+    },
+    {
+      "name": "developers",
+      "path": "/developers",
+      "realmRoles": ["developer"]
+    },
+    {
+      "name": "viewers",
+      "path": "/viewers",
+      "realmRoles": ["viewer"]
+    }
+  ],
+  "clients": [
+    {
+      "clientId": "api-gateway",
+      "name": "API Gateway",
+      "enabled": true,
+      "clientAuthenticatorType": "client-secret",
+      "secret": "api-gateway-secret-2024",
+      "redirectUris": ["http://localhost:8000/*", "http://localhost:8443/*"],
+      "webOrigins": ["*"],
+      "publicClient": false,
+      "protocol": "openid-connect",
+      "standardFlowEnabled": true,
+      "directAccessGrantsEnabled": true,
+      "serviceAccountsEnabled": true,
+      "fullScopeAllowed": true
+    },
+    {
+      "clientId": "frontend-app",
+      "name": "Frontend Application",
+      "enabled": true,
+      "publicClient": true,
+      "redirectUris": ["http://localhost:3000/*"],
+      "webOrigins": ["http://localhost:3000"],
+      "protocol": "openid-connect",
+      "standardFlowEnabled": true,
+      "directAccessGrantsEnabled": true
+    },
+    {
+      "clientId": "auth-service",
+      "name": "Auth Service",
+      "enabled": true,
+      "clientAuthenticatorType": "client-secret",
+      "secret": "auth-service-secret-2024",
+      "publicClient": false,
+      "serviceAccountsEnabled": true,
+      "directAccessGrantsEnabled": true,
+      "protocol": "openid-connect"
+    },
+    {
+      "clientId": "backend-service",
+      "name": "Backend Service",
+      "enabled": true,
+      "clientAuthenticatorType": "client-secret",
+      "secret": "backend-service-secret-2024",
+      "publicClient": false,
+      "serviceAccountsEnabled": true,
+      "directAccessGrantsEnabled": true,
+      "protocol": "openid-connect"
+    }
+  ],
+  "users": [
+    {
+      "username": "admin",
+      "enabled": true,
+      "email": "admin@zerotrust.local",
+      "firstName": "Admin",
+      "lastName": "User",
+      "emailVerified": true,
+      "credentials": [
+        {
+          "type": "password",
+          "value": "admin123",
+          "temporary": false
+        }
+      ],
+      "realmRoles": ["admin", "developer", "viewer"],
+      "groups": ["/administrators"]
+    },
+    {
+      "username": "developer",
+      "enabled": true,
+      "email": "developer@zerotrust.local",
+      "firstName": "Developer",
+      "lastName": "User",
+      "emailVerified": true,
+      "credentials": [
+        {
+          "type": "password",
+          "value": "dev12345",
+          "temporary": false
+        }
+      ],
+      "realmRoles": ["developer", "viewer"],
+      "groups": ["/developers"]
+    },
+    {
+      "username": "viewer",
+      "enabled": true,
+      "email": "viewer@zerotrust.local",
+      "firstName": "Viewer",
+      "lastName": "User",
+      "emailVerified": true,
+      "credentials": [
+        {
+          "type": "password",
+          "value": "view1234",
+          "temporary": false
+        }
+      ],
+      "realmRoles": ["viewer"],
+      "groups": ["/viewers"]
+    }
+  ]
+}
