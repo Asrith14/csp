@@ -1,0 +1,399 @@
+[18:50:31] CDK Toolkit CLI version: 2.1102.0 (build 8ea0dcb)
+[18:50:31] Command line arguments: {
+  _: [ 'synth' ],
+  v: 1,
+  verbose: 1,
+  app: undefined,
+  a: undefined,
+  build: undefined,
+  trace: undefined,
+  strict: undefined,
+  lookups: true,
+  'ignore-errors': false,
+  ignoreErrors: false,
+  json: false,
+  j: false,
+  debug: false,
+  profile: undefined,
+  proxy: undefined,
+  'ca-bundle-path': undefined,
+  caBundlePath: undefined,
+  ec2creds: undefined,
+  i: undefined,
+  'version-reporting': undefined,
+  telemetry: undefined,
+  versionReporting: undefined,
+  'path-metadata': undefined,
+  pathMetadata: undefined,
+  'asset-metadata': undefined,
+  assetMetadata: undefined,
+  'role-arn': undefined,
+  r: undefined,
+  roleArn: undefined,
+  staging: true,
+  output: undefined,
+  o: undefined,
+  notices: undefined,
+  'no-color': false,
+  noColor: false,
+  ci: false,
+  unstable: [],
+  'telemetry-file': undefined,
+  telemetryFile: undefined,
+  yes: false,
+  y: false,
+  exclusively: undefined,
+  e: undefined,
+  validation: true,
+  quiet: false,
+  q: false,
+  '$0': 'node_modules\\aws-cdk\\bin\\cdk',
+  language: undefined
+}
+[18:50:31] cdk.json: {
+  "app": "npx ts-node --prefer-ts-exts bin/infrastructure.ts",
+  "watch": {
+    "include": [
+      "**"
+    ],
+    "exclude": [
+      "README.md",
+      "cdk*.json",
+      "**/*.d.ts",
+      "**/*.js",
+      "tsconfig.json",
+      "package*.json",
+      "yarn.lock",
+      "node_modules",
+      "test"
+    ]
+  },
+  "context": {
+    "@aws-cdk/aws-signer:signingProfileNamePassedToCfn": true,
+    "@aws-cdk/aws-ecs-patterns:secGroupsDisablesImplicitOpenListener": true,
+    "@aws-cdk/aws-lambda:recognizeLayerVersion": true,
+    "@aws-cdk/core:checkSecretUsage": true,
+    "@aws-cdk/core:target-partitions": [
+      "aws",
+      "aws-cn"
+    ],
+    "@aws-cdk-containers/ecs-service-extensions:enableDefaultLogDriver": true,
+    "@aws-cdk/aws-ec2:uniqueImdsv2TemplateName": true,
+    "@aws-cdk/aws-ecs:arnFormatIncludesClusterName": true,
+    "@aws-cdk/aws-iam:minimizePolicies": true,
+    "@aws-cdk/core:validateSnapshotRemovalPolicy": true,
+    "@aws-cdk/aws-codepipeline:crossAccountKeyAliasStackSafeResourceName": true,
+    "@aws-cdk/aws-s3:createDefaultLoggingPolicy": true,
+    "@aws-cdk/aws-sns-subscriptions:restrictSqsDescryption": true,
+    "@aws-cdk/aws-apigateway:disableCloudWatchRole": true,
+    "@aws-cdk/core:enablePartitionLiterals": true,
+    "@aws-cdk/aws-events:eventsTargetQueueSameAccount": true,
+    "@aws-cdk/aws-ecs:disableExplicitDeploymentControllerForCircuitBreaker": true,
+    "@aws-cdk/aws-iam:importedRoleStackSafeDefaultPolicyName": true,
+    "@aws-cdk/aws-s3:serverAccessLogsUseBucketPolicy": true,
+    "@aws-cdk/aws-route53-patters:useCertificate": true,
+    "@aws-cdk/customresources:installLatestAwsSdkDefault": false,
+    "@aws-cdk/aws-rds:databaseProxyUniqueResourceName": true,
+    "@aws-cdk/aws-codedeploy:removeAlarmsFromDeploymentGroup": true,
+    "@aws-cdk/aws-apigateway:authorizerChangeDeploymentLogicalId": true,
+    "@aws-cdk/aws-ec2:launchTemplateDefaultUserData": true,
+    "@aws-cdk/aws-secretsmanager:useAttachedSecretResourcePolicyForSecretTargetAttachments": true,
+    "@aws-cdk/aws-redshift:columnId": true,
+    "@aws-cdk/aws-stepfunctions-tasks:enableEmrServicePolicyV2": true,
+    "@aws-cdk/aws-ec2:restrictDefaultSecurityGroup": true,
+    "@aws-cdk/aws-apigateway:requestValidatorUniqueId": true,
+    "@aws-cdk/aws-kms:aliasNameRef": true,
+    "@aws-cdk/aws-kms:applyImportedAliasPermissionsToPrincipal": true,
+    "@aws-cdk/aws-autoscaling:generateLaunchTemplateInsteadOfLaunchConfig": true,
+    "@aws-cdk/core:includePrefixInUniqueNameGeneration": true,
+    "@aws-cdk/aws-efs:denyAnonymousAccess": true,
+    "@aws-cdk/aws-opensearchservice:enableOpensearchMultiAzWithStandby": true,
+    "@aws-cdk/aws-lambda-nodejs:useLatestRuntimeVersion": true,
+    "@aws-cdk/aws-efs:mountTargetOrderInsensitiveLogicalId": true,
+    "@aws-cdk/aws-rds:auroraClusterChangeScopeOfInstanceParameterGroupWithEachParameters": true,
+    "@aws-cdk/aws-appsync:useArnForSourceApiAssociationIdentifier": true,
+    "@aws-cdk/aws-rds:preventRenderingDeprecatedCredentials": true,
+    "@aws-cdk/aws-codepipeline-actions:useNewDefaultBranchForCodeCommitSource": true,
+    "@aws-cdk/aws-cloudwatch-actions:changeLambdaPermissionLogicalIdForLambdaAction": true,
+    "@aws-cdk/aws-codepipeline:crossAccountKeysDefaultValueToFalse": true,
+    "@aws-cdk/aws-codepipeline:defaultPipelineTypeToV2": true,
+    "@aws-cdk/aws-kms:reduceCrossAccountRegionPolicyScope": true,
+    "@aws-cdk/aws-eks:nodegroupNameAttribute": true,
+    "@aws-cdk/aws-ec2:ebsDefaultGp3Volume": true,
+    "@aws-cdk/aws-ecs:removeDefaultDeploymentAlarm": true,
+    "@aws-cdk/custom-resources:logApiResponseDataPropertyTrueDefault": false,
+    "@aws-cdk/aws-s3:keepNotificationInImportedBucket": false,
+    "@aws-cdk/core:explicitStackTags": true,
+    "@aws-cdk/aws-ecs:reduceEc2FargateCloudWatchPermissions": true,
+    "@aws-cdk/aws-dynamodb:resourcePolicyPerReplica": true,
+    "@aws-cdk/aws-ec2:ec2SumTImeoutEnabled": true,
+    "@aws-cdk/aws-appsync:appSyncGraphQLAPIScopeLambdaPermission": true,
+    "@aws-cdk/aws-rds:setCorrectValueForDatabaseInstanceReadReplicaInstanceResourceId": true,
+    "@aws-cdk/core:cfnIncludeRejectComplexResourceUpdateCreatePolicyIntrinsics": true,
+    "@aws-cdk/aws-lambda-nodejs:sdkV3ExcludeSmithyPackages": true,
+    "@aws-cdk/aws-stepfunctions-tasks:fixRunEcsTaskPolicy": true,
+    "@aws-cdk/aws-ec2:bastionHostUseAmazonLinux2023ByDefault": true,
+    "@aws-cdk/aws-route53-targets:userPoolDomainNameMethodWithoutCustomResource": true,
+    "@aws-cdk/aws-elasticloadbalancingV2:albDualstackWithoutPublicIpv4SecurityGroupRulesDefault": true,
+    "@aws-cdk/aws-iam:oidcRejectUnauthorizedConnections": true,
+    "@aws-cdk/core:enableAdditionalMetadataCollection": true,
+    "@aws-cdk/aws-lambda:createNewPoliciesWithAddToRolePolicy": false,
+    "@aws-cdk/aws-s3:setUniqueReplicationRoleName": true,
+    "@aws-cdk/aws-events:requireEventBusPolicySid": true,
+    "@aws-cdk/core:aspectPrioritiesMutating": true,
+    "@aws-cdk/aws-dynamodb:retainTableReplica": true,
+    "@aws-cdk/aws-stepfunctions:useDistributedMapResultWriterV2": true,
+    "@aws-cdk/s3-notifications:addS3TrustKeyPolicyForSnsSubscriptions": true,
+    "@aws-cdk/aws-ec2:requirePrivateSubnetsForEgressOnlyInternetGateway": true,
+    "@aws-cdk/aws-s3:publicAccessBlockedByDefault": true,
+    "@aws-cdk/aws-lambda:useCdkManagedLogGroup": true,
+    "@aws-cdk/aws-elasticloadbalancingv2:networkLoadBalancerWithSecurityGroupByDefault": true,
+    "@aws-cdk/aws-ecs-patterns:uniqueTargetGroupId": true,
+    "@aws-cdk/aws-route53-patterns:useDistribution": true
+  }
+}
+[18:50:31] merged settings: {
+  versionReporting: true,
+  assetMetadata: true,
+  pathMetadata: true,
+  output: 'cdk.out',
+  app: 'npx ts-node --prefer-ts-exts bin/infrastructure.ts',
+  watch: {
+    include: [ '**' ],
+    exclude: [
+      'README.md',
+      'cdk*.json',
+      '**/*.d.ts',
+      '**/*.js',
+      'tsconfig.json',
+      'package*.json',
+      'yarn.lock',
+      'node_modules',
+      'test'
+    ]
+  },
+  context: {
+    '@aws-cdk/aws-signer:signingProfileNamePassedToCfn': true,
+    '@aws-cdk/aws-ecs-patterns:secGroupsDisablesImplicitOpenListener': true,
+    '@aws-cdk/aws-lambda:recognizeLayerVersion': true,
+    '@aws-cdk/core:checkSecretUsage': true,
+    '@aws-cdk/core:target-partitions': [ 'aws', 'aws-cn' ],
+    '@aws-cdk-containers/ecs-service-extensions:enableDefaultLogDriver': true,
+    '@aws-cdk/aws-ec2:uniqueImdsv2TemplateName': true,
+    '@aws-cdk/aws-ecs:arnFormatIncludesClusterName': true,
+    '@aws-cdk/aws-iam:minimizePolicies': true,
+    '@aws-cdk/core:validateSnapshotRemovalPolicy': true,
+    '@aws-cdk/aws-codepipeline:crossAccountKeyAliasStackSafeResourceName': true,
+    '@aws-cdk/aws-s3:createDefaultLoggingPolicy': true,
+    '@aws-cdk/aws-sns-subscriptions:restrictSqsDescryption': true,
+    '@aws-cdk/aws-apigateway:disableCloudWatchRole': true,
+    '@aws-cdk/core:enablePartitionLiterals': true,
+    '@aws-cdk/aws-events:eventsTargetQueueSameAccount': true,
+    '@aws-cdk/aws-ecs:disableExplicitDeploymentControllerForCircuitBreaker': true,
+    '@aws-cdk/aws-iam:importedRoleStackSafeDefaultPolicyName': true,
+    '@aws-cdk/aws-s3:serverAccessLogsUseBucketPolicy': true,
+    '@aws-cdk/aws-route53-patters:useCertificate': true,
+    '@aws-cdk/customresources:installLatestAwsSdkDefault': false,
+    '@aws-cdk/aws-rds:databaseProxyUniqueResourceName': true,
+    '@aws-cdk/aws-codedeploy:removeAlarmsFromDeploymentGroup': true,
+    '@aws-cdk/aws-apigateway:authorizerChangeDeploymentLogicalId': true,
+    '@aws-cdk/aws-ec2:launchTemplateDefaultUserData': true,
+    '@aws-cdk/aws-secretsmanager:useAttachedSecretResourcePolicyForSecretTargetAttachments': true,
+    '@aws-cdk/aws-redshift:columnId': true,
+    '@aws-cdk/aws-stepfunctions-tasks:enableEmrServicePolicyV2': true,
+    '@aws-cdk/aws-ec2:restrictDefaultSecurityGroup': true,
+    '@aws-cdk/aws-apigateway:requestValidatorUniqueId': true,
+    '@aws-cdk/aws-kms:aliasNameRef': true,
+    '@aws-cdk/aws-kms:applyImportedAliasPermissionsToPrincipal': true,
+    '@aws-cdk/aws-autoscaling:generateLaunchTemplateInsteadOfLaunchConfig': true,
+    '@aws-cdk/core:includePrefixInUniqueNameGeneration': true,
+    '@aws-cdk/aws-efs:denyAnonymousAccess': true,
+    '@aws-cdk/aws-opensearchservice:enableOpensearchMultiAzWithStandby': true,
+    '@aws-cdk/aws-lambda-nodejs:useLatestRuntimeVersion': true,
+    '@aws-cdk/aws-efs:mountTargetOrderInsensitiveLogicalId': true,
+    '@aws-cdk/aws-rds:auroraClusterChangeScopeOfInstanceParameterGroupWithEachParameters': true,
+    '@aws-cdk/aws-appsync:useArnForSourceApiAssociationIdentifier': true,
+    '@aws-cdk/aws-rds:preventRenderingDeprecatedCredentials': true,
+    '@aws-cdk/aws-codepipeline-actions:useNewDefaultBranchForCodeCommitSource': true,
+    '@aws-cdk/aws-cloudwatch-actions:changeLambdaPermissionLogicalIdForLambdaAction': true,
+    '@aws-cdk/aws-codepipeline:crossAccountKeysDefaultValueToFalse': true,
+    '@aws-cdk/aws-codepipeline:defaultPipelineTypeToV2': true,
+    '@aws-cdk/aws-kms:reduceCrossAccountRegionPolicyScope': true,
+    '@aws-cdk/aws-eks:nodegroupNameAttribute': true,
+    '@aws-cdk/aws-ec2:ebsDefaultGp3Volume': true,
+    '@aws-cdk/aws-ecs:removeDefaultDeploymentAlarm': true,
+    '@aws-cdk/custom-resources:logApiResponseDataPropertyTrueDefault': false,
+    '@aws-cdk/aws-s3:keepNotificationInImportedBucket': false,
+    '@aws-cdk/core:explicitStackTags': true,
+    '@aws-cdk/aws-ecs:reduceEc2FargateCloudWatchPermissions': true,
+    '@aws-cdk/aws-dynamodb:resourcePolicyPerReplica': true,
+    '@aws-cdk/aws-ec2:ec2SumTImeoutEnabled': true,
+    '@aws-cdk/aws-appsync:appSyncGraphQLAPIScopeLambdaPermission': true,
+    '@aws-cdk/aws-rds:setCorrectValueForDatabaseInstanceReadReplicaInstanceResourceId': true,
+    '@aws-cdk/core:cfnIncludeRejectComplexResourceUpdateCreatePolicyIntrinsics': true,
+    '@aws-cdk/aws-lambda-nodejs:sdkV3ExcludeSmithyPackages': true,
+    '@aws-cdk/aws-stepfunctions-tasks:fixRunEcsTaskPolicy': true,
+    '@aws-cdk/aws-ec2:bastionHostUseAmazonLinux2023ByDefault': true,
+    '@aws-cdk/aws-route53-targets:userPoolDomainNameMethodWithoutCustomResource': true,
+    '@aws-cdk/aws-elasticloadbalancingV2:albDualstackWithoutPublicIpv4SecurityGroupRulesDefault': true,
+    '@aws-cdk/aws-iam:oidcRejectUnauthorizedConnections': true,
+    '@aws-cdk/core:enableAdditionalMetadataCollection': true,
+    '@aws-cdk/aws-lambda:createNewPoliciesWithAddToRolePolicy': false,
+    '@aws-cdk/aws-s3:setUniqueReplicationRoleName': true,
+    '@aws-cdk/aws-events:requireEventBusPolicySid': true,
+    '@aws-cdk/core:aspectPrioritiesMutating': true,
+    '@aws-cdk/aws-dynamodb:retainTableReplica': true,
+    '@aws-cdk/aws-stepfunctions:useDistributedMapResultWriterV2': true,
+    '@aws-cdk/s3-notifications:addS3TrustKeyPolicyForSnsSubscriptions': true,
+    '@aws-cdk/aws-ec2:requirePrivateSubnetsForEgressOnlyInternetGateway': true,
+    '@aws-cdk/aws-s3:publicAccessBlockedByDefault': true,
+    '@aws-cdk/aws-lambda:useCdkManagedLogGroup': true,
+    '@aws-cdk/aws-elasticloadbalancingv2:networkLoadBalancerWithSecurityGroupByDefault': true,
+    '@aws-cdk/aws-ecs-patterns:uniqueTargetGroupId': true,
+    '@aws-cdk/aws-route53-patterns:useDistribution': true
+  },
+  debug: false,
+  toolkitBucket: {},
+  staging: true,
+  bundlingStacks: [ '**' ],
+  lookups: true,
+  hotswap: { ecs: {} },
+  unstable: []
+}
+[18:50:31] Looking up AWS region in the EC2 Instance Metadata Service (IMDS).
+[18:50:31] Reading cached notices from C:\Users\bobyt\.cdk\cache\notices.json
+[18:50:32] Unable to retrieve AWS region from IMDS: Error: Error fetching metadata token: TimeoutError: @smithy/node-http-handler - the request socket did not establish a connection with the server within the configured timeout of 1000 ms.
+[18:50:32] Unable to determine AWS region from environment or AWS configuration (profile: "default"), defaulting to 'us-east-1'
+[18:50:32] Looking up AWS region in the EC2 Instance Metadata Service (IMDS).
+[18:50:33] Unable to retrieve AWS region from IMDS: Error: Error fetching metadata token: TimeoutError: @smithy/node-http-handler - the request socket did not establish a connection with the server within the configured timeout of 1000 ms.
+[18:50:33] Unable to determine AWS region from environment or AWS configuration (profile: "default"), defaulting to 'us-east-1'
+[18:50:33] Toolkit stack: CDKToolkit
+[18:50:33] context: {
+  '@aws-cdk/aws-signer:signingProfileNamePassedToCfn': true,
+  '@aws-cdk/aws-ecs-patterns:secGroupsDisablesImplicitOpenListener': true,
+  '@aws-cdk/aws-lambda:recognizeLayerVersion': true,
+  '@aws-cdk/core:checkSecretUsage': true,
+  '@aws-cdk/core:target-partitions': [ 'aws', 'aws-cn' ],
+  '@aws-cdk-containers/ecs-service-extensions:enableDefaultLogDriver': true,
+  '@aws-cdk/aws-ec2:uniqueImdsv2TemplateName': true,
+  '@aws-cdk/aws-ecs:arnFormatIncludesClusterName': true,
+  '@aws-cdk/aws-iam:minimizePolicies': true,
+  '@aws-cdk/core:validateSnapshotRemovalPolicy': true,
+  '@aws-cdk/aws-codepipeline:crossAccountKeyAliasStackSafeResourceName': true,
+  '@aws-cdk/aws-s3:createDefaultLoggingPolicy': true,
+  '@aws-cdk/aws-sns-subscriptions:restrictSqsDescryption': true,
+  '@aws-cdk/aws-apigateway:disableCloudWatchRole': true,
+  '@aws-cdk/core:enablePartitionLiterals': true,
+  '@aws-cdk/aws-events:eventsTargetQueueSameAccount': true,
+  '@aws-cdk/aws-ecs:disableExplicitDeploymentControllerForCircuitBreaker': true,
+  '@aws-cdk/aws-iam:importedRoleStackSafeDefaultPolicyName': true,
+  '@aws-cdk/aws-s3:serverAccessLogsUseBucketPolicy': true,
+  '@aws-cdk/aws-route53-patters:useCertificate': true,
+  '@aws-cdk/customresources:installLatestAwsSdkDefault': false,
+  '@aws-cdk/aws-rds:databaseProxyUniqueResourceName': true,
+  '@aws-cdk/aws-codedeploy:removeAlarmsFromDeploymentGroup': true,
+  '@aws-cdk/aws-apigateway:authorizerChangeDeploymentLogicalId': true,
+  '@aws-cdk/aws-ec2:launchTemplateDefaultUserData': true,
+  '@aws-cdk/aws-secretsmanager:useAttachedSecretResourcePolicyForSecretTargetAttachments': true,
+  '@aws-cdk/aws-redshift:columnId': true,
+  '@aws-cdk/aws-stepfunctions-tasks:enableEmrServicePolicyV2': true,
+  '@aws-cdk/aws-ec2:restrictDefaultSecurityGroup': true,
+  '@aws-cdk/aws-apigateway:requestValidatorUniqueId': true,
+  '@aws-cdk/aws-kms:aliasNameRef': true,
+  '@aws-cdk/aws-kms:applyImportedAliasPermissionsToPrincipal': true,
+  '@aws-cdk/aws-autoscaling:generateLaunchTemplateInsteadOfLaunchConfig': true,
+  '@aws-cdk/core:includePrefixInUniqueNameGeneration': true,
+  '@aws-cdk/aws-efs:denyAnonymousAccess': true,
+  '@aws-cdk/aws-opensearchservice:enableOpensearchMultiAzWithStandby': true,
+  '@aws-cdk/aws-lambda-nodejs:useLatestRuntimeVersion': true,
+  '@aws-cdk/aws-efs:mountTargetOrderInsensitiveLogicalId': true,
+  '@aws-cdk/aws-rds:auroraClusterChangeScopeOfInstanceParameterGroupWithEachParameters': true,
+  '@aws-cdk/aws-appsync:useArnForSourceApiAssociationIdentifier': true,
+  '@aws-cdk/aws-rds:preventRenderingDeprecatedCredentials': true,
+  '@aws-cdk/aws-codepipeline-actions:useNewDefaultBranchForCodeCommitSource': true,
+  '@aws-cdk/aws-cloudwatch-actions:changeLambdaPermissionLogicalIdForLambdaAction': true,
+  '@aws-cdk/aws-codepipeline:crossAccountKeysDefaultValueToFalse': true,
+  '@aws-cdk/aws-codepipeline:defaultPipelineTypeToV2': true,
+  '@aws-cdk/aws-kms:reduceCrossAccountRegionPolicyScope': true,
+  '@aws-cdk/aws-eks:nodegroupNameAttribute': true,
+  '@aws-cdk/aws-ec2:ebsDefaultGp3Volume': true,
+  '@aws-cdk/aws-ecs:removeDefaultDeploymentAlarm': true,
+  '@aws-cdk/custom-resources:logApiResponseDataPropertyTrueDefault': false,
+  '@aws-cdk/aws-s3:keepNotificationInImportedBucket': false,
+  '@aws-cdk/core:explicitStackTags': true,
+  '@aws-cdk/aws-ecs:reduceEc2FargateCloudWatchPermissions': true,
+  '@aws-cdk/aws-dynamodb:resourcePolicyPerReplica': true,
+  '@aws-cdk/aws-ec2:ec2SumTImeoutEnabled': true,
+  '@aws-cdk/aws-appsync:appSyncGraphQLAPIScopeLambdaPermission': true,
+  '@aws-cdk/aws-rds:setCorrectValueForDatabaseInstanceReadReplicaInstanceResourceId': true,
+  '@aws-cdk/core:cfnIncludeRejectComplexResourceUpdateCreatePolicyIntrinsics': true,
+  '@aws-cdk/aws-lambda-nodejs:sdkV3ExcludeSmithyPackages': true,
+  '@aws-cdk/aws-stepfunctions-tasks:fixRunEcsTaskPolicy': true,
+  '@aws-cdk/aws-ec2:bastionHostUseAmazonLinux2023ByDefault': true,
+  '@aws-cdk/aws-route53-targets:userPoolDomainNameMethodWithoutCustomResource': true,
+  '@aws-cdk/aws-elasticloadbalancingV2:albDualstackWithoutPublicIpv4SecurityGroupRulesDefault': true,
+  '@aws-cdk/aws-iam:oidcRejectUnauthorizedConnections': true,
+  '@aws-cdk/core:enableAdditionalMetadataCollection': true,
+  '@aws-cdk/aws-lambda:createNewPoliciesWithAddToRolePolicy': false,
+  '@aws-cdk/aws-s3:setUniqueReplicationRoleName': true,
+  '@aws-cdk/aws-events:requireEventBusPolicySid': true,
+  '@aws-cdk/core:aspectPrioritiesMutating': true,
+  '@aws-cdk/aws-dynamodb:retainTableReplica': true,
+  '@aws-cdk/aws-stepfunctions:useDistributedMapResultWriterV2': true,
+  '@aws-cdk/s3-notifications:addS3TrustKeyPolicyForSnsSubscriptions': true,
+  '@aws-cdk/aws-ec2:requirePrivateSubnetsForEgressOnlyInternetGateway': true,
+  '@aws-cdk/aws-s3:publicAccessBlockedByDefault': true,
+  '@aws-cdk/aws-lambda:useCdkManagedLogGroup': true,
+  '@aws-cdk/aws-elasticloadbalancingv2:networkLoadBalancerWithSecurityGroupByDefault': true,
+  '@aws-cdk/aws-ecs-patterns:uniqueTargetGroupId': true,
+  '@aws-cdk/aws-route53-patterns:useDistribution': true,
+  'aws:cdk:enable-path-metadata': true,
+  'aws:cdk:enable-asset-metadata': true,
+  'aws:cdk:version-reporting': true,
+  'aws:cdk:bundling-stacks': [ '**' ]
+}
+[18:50:33] Setting "CDK_DEFAULT_REGION" environment variable to us-east-1
+[18:50:35] Unable to determine the default AWS account (CredentialsProviderError): Could not load credentials from any providers
+[18:50:35] Not a file: 'npx ts-node --prefer-ts-exts bin/infrastructure.ts'. Using 'npx ts-node --prefer-ts-exts bin/infrastructure.ts as command-line
+[18:50:35] outdir: cdk.out
+[18:50:35] env: {
+  CDK_DEFAULT_REGION: 'us-east-1',
+  CDK_OUTDIR: 'cdk.out',
+  CDK_CLI_ASM_VERSION: '50.0.0',
+  CDK_CLI_VERSION: '2.1102.0'
+}
+Bundling asset ComputeStack/PreSignUpFunc/Code/Stage...
+
+  ...4df8a99351cba96390639948d8d07ab9d73109edc4129c1e-building\index.js  1.2kb
+
+Done in 2ms
+Bundling asset ComputeStack/PostConfirmationFunc/Code/Stage...
+
+  ...61f63bc05907680e5355c265075c5a7de4eaf8fbe65b0677-building\index.js  1.6kb
+
+Done in 3ms
+ValidationError: 'ComputeStack' depends on 'IdentityStack' (ComputeStack -> IdentityStack/ZeroTrustUserPool/Resource.Arn). Adding this dependency (IdentityStack -> ComputeStack/PreSignUpFunc/Resource.Arn) would create a cyclic reference.
+    at path [IdentityStack] in aws-cdk-lib.Stack
+
+[18:50:43] failed command: npx ts-node --prefer-ts-exts bin/infrastructure.ts
+
+NOTICES         (What's this? https://github.com/aws/aws-cdk/wiki/CLI-Notices)
+
+34892	CDK CLI collects telemetry data on command usage starting at version 2.1100.0 (unless opted out)
+
+	Overview: We do not collect customer content and we anonymize the
+	          telemetry we do collect. See the attached issue for more
+	          information on what data is collected, why, and how to
+	          opt-out. Telemetry will NOT be collected for any CDK CLI
+	          version prior to version 2.1100.0 - regardless of
+	          opt-in/out. You can also view the telemetry we collect by
+	          logging it to a local file, by adding
+	          `--telemetry-file=my/local/file` to any `cdk` command.
+
+	Affected versions: cli: ^2.1100.0
+
+	More information at: https://github.com/aws/aws-cdk/issues/34892
+
+
+If you donΓÇÖt want to see a notice anymore, use "cdk acknowledge <id>". For example, "cdk acknowledge 34892".
+npx ts-node --prefer-ts-exts bin/infrastructure.ts: Subprocess exited with error 1
