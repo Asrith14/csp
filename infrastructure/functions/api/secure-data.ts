@@ -44,8 +44,14 @@ export const handler = async (event: APIGatewayProxyEvent): Promise<APIGatewayPr
                 secretInfo = `Retrieved credentials for user: ${secret.username}`;
             }
         } catch (err) {
+            // A failed Secrets Manager call is a critical backend dependency failure.
+            // Return 500 — never return 200 OK when the system cannot fulfil the request.
             log('ERROR', 'Failed to retrieve secret', { secretName, error: String(err) });
-            secretInfo = 'Secret retrieval failed';
+            return {
+                statusCode: 500,
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ message: 'Internal Server Error' }),
+            };
         }
     }
 
