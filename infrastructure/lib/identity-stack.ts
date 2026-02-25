@@ -16,7 +16,6 @@ export class IdentityStack extends cdk.Stack {
   constructor(scope: Construct, id: string, props: IdentityStackProps) {
     super(scope, id, props);
 
-    // Day 2 Foundations: User Pool
     this.userPool = new cognito.UserPool(this, 'ZeroTrustUserPool', {
       selfSignUpEnabled: true,
       signInAliases: { email: true },
@@ -28,31 +27,28 @@ export class IdentityStack extends cdk.Stack {
         requireSymbols: true,
       },
       accountRecovery: cognito.AccountRecovery.EMAIL_ONLY,
-      // MFA Configuration
       mfa: cognito.Mfa.REQUIRED,
       mfaSecondFactor: {
         sms: false,
-        otp: true,
+        otp: true, // TOTP only
       },
-      // Lambda Triggers
       lambdaTriggers: {
         preSignUp: props.preSignUpFunction,
         postConfirmation: props.postConfirmationFunction,
       },
     });
 
-    // Groups
-    const groups = ['Admin', 'Developer', 'Viewer'];
-    groups.forEach(groupName => {
+    const groups = ['Admin', 'Developer', 'Viewer'] as const;
+    for (const groupName of groups) {
       new cognito.CfnUserPoolGroup(this, `Group${groupName}`, {
         userPoolId: this.userPool.userPoolId,
-        groupName: groupName,
-        description: `${groupName} group`,
+        groupName,
+        description: `${groupName} group for Zero Trust RBAC`,
       });
-    });
+    }
 
-    // Grant Post-Confirmation Lambda permission to add user to groups
-    // We create a separate Policy in this stack to avoid circular dependency (Identity -> Compute -> Identity)
+    // Grant the PostConfirmation Lambda permission to call AdminAddUserToGroup.
+    // Policy is created here (not in ComputeStack) to avoid a circular dependency.
     if (props.postConfirmationFunction.role) {
       const groupPolicy = new iam.Policy(this, 'UserPoolGroupPolicy', {
         statements: [
@@ -64,14 +60,15 @@ export class IdentityStack extends cdk.Stack {
       });
       groupPolicy.attachToRole(props.postConfirmationFunction.role);
     }
-    // props.postConfirmationFunction.addToRolePolicy(addToGroupPolicy);
 
     this.userPoolClient = this.userPool.addClient('AppClient', {
       authFlows: {
-        userSrp: true, // Recommended for mobile/web
+        userSrp: true,       // Secure Remote Password — recommended for all clients
+        userPassword: false, // Disabled: plaintext password flow
+        adminUserPassword: false,
       },
       accessTokenValidity: cdk.Duration.hours(1),
-      refreshTokenValidity: cdk.Duration.days(1), // Rotation enabled implicitly by refresh token validity
+      refreshTokenValidity: cdk.Duration.days(1),
     });
 
     new cdk.CfnOutput(this, 'UserPoolId', { value: this.userPool.userPoolId });

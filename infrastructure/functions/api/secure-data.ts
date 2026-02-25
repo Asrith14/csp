@@ -1,57 +1,62 @@
-// aws-sdk provided by Lambda runtime
-// eslint-disable-next-line @typescript-eslint/no-var-requires
-const AWS = require('aws-sdk');
-const secretsManager = new AWS.SecretsManager();
+import {
+    SecretsManagerClient,
+    GetSecretValueCommand,
+} from '@aws-sdk/client-secrets-manager';
+import type {
+    APIGatewayProxyEvent,
+    APIGatewayProxyResult,
+} from 'aws-lambda';
 
-export const handler = async (event: any) => {
-    console.log(JSON.stringify({
-        level: 'INFO',
-        message: 'Processing secure-data request',
-        requestId: event.requestContext?.requestId,
+const secretsClient = new SecretsManagerClient({});
+
+const log = (level: 'INFO' | 'WARN' | 'ERROR', message: string, extra?: Record<string, unknown>) => {
+    console.log(JSON.stringify({ level, message, ...extra }));
+};
+
+export const handler = async (event: APIGatewayProxyEvent): Promise<APIGatewayProxyResult> => {
+    log('INFO', 'Processing secure-data request', {
+        requestId: event.requestContext.requestId,
         path: event.path,
-        sourceIp: event.requestContext?.identity?.sourceIp
-    }));
+        sourceIp: event.requestContext.identity.sourceIp,
+    });
 
-    // Day 3: Claims Validation
-    // The Authorizer verification happens at the Gateway, but we can inspect claims here
-    const claims = event.requestContext?.authorizer?.claims;
+    const claims = event.requestContext.authorizer?.claims as Record<string, string> | undefined;
 
     if (!claims) {
-        // This should theoretically be blocked by API Gateway Authorizer before reaching here
+        // Defense-in-depth: Authorizer should have already blocked this
         return {
             statusCode: 401,
-            body: JSON.stringify({ message: 'Unauthorized: No claims found' }),
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ message: 'Unauthorized' }),
         };
     }
 
-    // Day 4: Retrieve Secret
-    let secretValue = 'Not Found';
     const secretName = process.env.SECRET_NAME;
+    let secretInfo = 'Not configured';
 
     if (secretName) {
         try {
-            const data = await secretsManager.getSecretValue({ SecretId: secretName }).promise();
-            if (data.SecretString) {
-                // In a real app, we would parse this JSON and use the credentials
-                const secret = JSON.parse(data.SecretString);
-                secretValue = `Retrieved user: ${secret.username} (Password hidden)`;
+            const response = await secretsClient.send(
+                new GetSecretValueCommand({ SecretId: secretName }),
+            );
+            if (response.SecretString) {
+                const secret = JSON.parse(response.SecretString) as Record<string, string>;
+                secretInfo = `Retrieved credentials for user: ${secret.username}`;
             }
         } catch (err) {
-            console.error('Error retrieving secret:', err);
-            secretValue = 'Error retrieving secret';
+            log('ERROR', 'Failed to retrieve secret', { secretName, error: String(err) });
+            secretInfo = 'Secret retrieval failed';
         }
     }
 
-    // Business Logic
     return {
         statusCode: 200,
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-            message: 'Secure Data Retrieved Successfully',
-            user: claims.email || claims.username,
-            role: 'AuthenticatedUser', // Validation simplified for demo
+            message: 'OK',
+            user: claims['email'] ?? claims['cognito:username'],
             data: {
-                secretInfo: secretValue,
+                secretInfo,
                 timestamp: new Date().toISOString(),
             },
         }),

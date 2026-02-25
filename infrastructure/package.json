@@ -12,9 +12,12 @@
   },
   "devDependencies": {
     "@types/aws-lambda": "^8.10.160",
+    "@types/aws-sdk": "^0.0.42",
     "@types/jest": "^30",
     "@types/node": "^24.10.1",
     "aws-cdk": "2.1102.0",
+    "aws-sdk": "^2.1693.0",
+    "aws-sdk-mock": "^6.2.1",
     "esbuild": "^0.27.2",
     "jest": "^30",
     "ts-jest": "^29",
@@ -22,6 +25,8 @@
     "typescript": "~5.9.3"
   },
   "dependencies": {
+    "@aws-sdk/client-cognito-identity-provider": "^3.997.0",
+    "@aws-sdk/client-secrets-manager": "^3.997.0",
     "aws-cdk-lib": "^2.235.1",
     "constructs": "^10.0.0"
   }

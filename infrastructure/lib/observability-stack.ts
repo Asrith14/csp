@@ -6,18 +6,18 @@ import { Construct } from 'constructs';
 
 interface ObservabilityStackProps extends cdk.StackProps {
     api: apigateway.RestApi;
+    /** Email address to receive cost forecast alerts. */
+    alertEmail: string;
 }
 
 export class ObservabilityStack extends cdk.Stack {
     constructor(scope: Construct, id: string, props: ObservabilityStackProps) {
         super(scope, id, props);
 
-        // Day 5: CloudWatch Dashboard
         const dashboard = new cloudwatch.Dashboard(this, 'ZeroTrustDashboard', {
             dashboardName: 'ZeroTrust-Operational-Dashboard',
         });
 
-        // API Gateway Metrics
         const api5xxMetric = new cloudwatch.Metric({
             namespace: 'AWS/ApiGateway',
             metricName: '5XXError',
@@ -30,7 +30,7 @@ export class ObservabilityStack extends cdk.Stack {
             namespace: 'AWS/ApiGateway',
             metricName: 'Latency',
             dimensionsMap: { ApiName: props.api.restApiName },
-            statistic: 'Average',
+            statistic: 'p99',
             period: cdk.Duration.minutes(1),
         });
 
@@ -50,23 +50,21 @@ export class ObservabilityStack extends cdk.Stack {
                 width: 12,
             }),
             new cloudwatch.GraphWidget({
-                title: 'API Latency',
+                title: 'API Latency (p99)',
                 left: [apiLatencyMetric],
                 width: 12,
-            })
+            }),
         );
 
-        // Day 5: Alarms
-        // Trigger if > 1% of requests are 5XX errors (simplified as > 5 errors for demo)
         new cloudwatch.Alarm(this, 'HighErrorRateAlarm', {
             metric: api5xxMetric,
             threshold: 5,
             evaluationPeriods: 1,
             comparisonOperator: cloudwatch.ComparisonOperator.GREATER_THAN_THRESHOLD,
-            alarmDescription: 'Alarm if API Gateway 5XX errors > 5 in 1 minute',
+            alarmDescription: 'API Gateway 5XX error count exceeded 5 in a 1-minute window',
+            treatMissingData: cloudwatch.TreatMissingData.NOT_BREACHING,
         });
 
-        // Day 5: Cost Budget (USD 10.00)
         new budgets.CfnBudget(this, 'MonthlyBudget', {
             budget: {
                 budgetType: 'COST',
@@ -81,13 +79,13 @@ export class ObservabilityStack extends cdk.Stack {
                     notification: {
                         notificationType: 'FORECASTED',
                         comparisonOperator: 'GREATER_THAN',
-                        threshold: 100, // 100% of budget
+                        threshold: 100,
                         thresholdType: 'PERCENTAGE',
                     },
                     subscribers: [
                         {
                             subscriptionType: 'EMAIL',
-                            address: 'admin@example.com', // Placeholder
+                            address: props.alertEmail,
                         },
                     ],
                 },

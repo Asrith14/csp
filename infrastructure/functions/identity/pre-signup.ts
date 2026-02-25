@@ -1,11 +1,14 @@
-export const handler = async (event: any) => {
-    console.log(JSON.stringify(event, null, 2));
+import type { PreSignUpTriggerEvent } from 'aws-lambda';
 
-    // Day 2: Auto-confirm users or perform validation
-    // For now, we just auto-confirm everyone to simplify testing
-    // In production, we might check for specific email domains
-    event.response.autoConfirmUser = true;
-    event.response.autoVerifyEmail = true;
+/**
+ * Pre-SignUp Trigger: auto-confirms users so they can proceed without email verification code.
+ * In production, replace this with domain allowlist logic.
+ */
+export const handler = async (event: PreSignUpTriggerEvent): Promise<PreSignUpTriggerEvent> => {
+  console.log(JSON.stringify({ level: 'INFO', message: 'PreSignUp trigger fired', userName: event.userName }));
 
-    return event;
+  event.response.autoConfirmUser = true;
+  event.response.autoVerifyEmail = true;
+
+  return event;
 };
