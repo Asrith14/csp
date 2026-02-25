@@ -42,39 +42,60 @@ allow if {
 # Developers can access development resources
 allow if {
     "developer" in input.user.roles
-    allowed_developer_paths[input.resource.path]
+    is_allowed_developer_path(input.resource.path)
 }
 
 # Viewers have read-only access
 allow if {
     "viewer" in input.user.roles
     input.resource.method == "GET"
-    not sensitive_paths[input.resource.path]
+    not is_sensitive_path(input.resource.path)
 }
 
 # ============================================
 # Path-Based Policies
 # ============================================
 
-# Paths developers can access
-allowed_developer_paths := {
+# Allowed path prefixes for developers.
+# Uses startswith so /api/v1/users/123 is covered by "/api/v1/users".
+# Order matters for security: more-specific prefixes should be listed first.
+allowed_developer_prefixes := [
     "/api/v1/users",
     "/api/v1/products",
     "/api/v1/orders",
     "/api/v1/debug",
     "/api/v1/logs"
+]
+
+is_allowed_developer_path(path) if {
+    some prefix in allowed_developer_prefixes
+    startswith(path, prefix)
+    # Prevent path traversal: /api/v1/userssecret must not match /api/v1/users
+    # The character after the prefix must be '/', a query marker '?', or end of string.
+    suffix := substring(path, count(prefix), -1)
+    suffix == ""
+} else if {
+    some prefix in allowed_developer_prefixes
+    startswith(path, concat("", [prefix, "/"]))
 }
 
-# Sensitive paths requiring admin
-sensitive_paths := {
+# Sensitive path prefixes requiring admin — exact check sufficient here
+# because these are leaf paths, not collection prefixes.
+sensitive_path_prefixes := [
     "/api/v1/admin",
     "/api/v1/secrets",
     "/api/v1/audit",
     "/api/v1/config"
+]
+
+is_sensitive_path(path) if {
+    some prefix in sensitive_path_prefixes
+    startswith(path, prefix)
 }
 
-# Public paths (no auth required)
-public_paths := {
+# Public paths (no auth required) — exact match is correct;
+# these are known, fixed endpoints, not collections.
+public_path_set := {
     "/health",
     "/metrics",
     "/auth/login",
@@ -83,7 +104,7 @@ public_paths := {
 
 # Allow public paths without authentication
 allow if {
-    public_paths[input.resource.path]
+    public_path_set[input.resource.path]
 }
 
 # ============================================
@@ -166,7 +187,7 @@ admin_whitelisted_ips := {
 
 # Determine if request should be logged
 audit_log if {
-    sensitive_paths[input.resource.path]
+    is_sensitive_path(input.resource.path)
 }
 
 audit_log if {

@@ -27,16 +27,28 @@ const config = {
   },
   vault: {
     addr: process.env.VAULT_ADDR || 'http://vault:8200',
-    token: process.env.VAULT_TOKEN || 'root-token-zero-trust'
+    // Never fall back to a hardcoded token — fail loudly if not set.
+    token: process.env.VAULT_TOKEN
   },
   opa: {
     url: process.env.OPA_URL || 'http://opa:8181'
   },
   database: {
-    url: process.env.DATABASE_URL || 'postgresql://app:app_secret@postgres-app:5432/appdb'
+    // Never fall back to hardcoded credentials — fail loudly if not set.
+    url: process.env.DATABASE_URL
   },
   serviceName: process.env.SERVICE_NAME || 'backend-service'
 };
+
+// Guard: refuse to start if critical secrets are missing.
+if (!config.vault.token) {
+  console.error('FATAL: VAULT_TOKEN environment variable is not set.');
+  process.exit(1);
+}
+if (!config.database.url) {
+  console.error('FATAL: DATABASE_URL environment variable is not set.');
+  process.exit(1);
+}
 
 // Logger
 const logger = winston.createLogger({
@@ -147,7 +159,12 @@ async function checkPolicy(policy, input) {
     const response = await axios.post(
       `${config.opa.url}/v1/data/zerotrust/${policy}`,
       { input },
-      { timeout: 5000 }
+      {
+        // 500ms max — authorization runs on every request.
+        // A 5-second timeout will saturate the event loop under any real load.
+        // In production, deploy OPA as a sidecar to eliminate the network hop entirely.
+        timeout: 500
+      }
     );
     const result = response.data.result;
     policyDecisions.labels(result?.allow ? 'allow' : 'deny', policy).inc();
@@ -155,6 +172,7 @@ async function checkPolicy(policy, input) {
   } catch (error) {
     logger.error('Policy check error', { policy, error: error.message });
     policyDecisions.labels('error', policy).inc();
+    // Fail closed: deny on any OPA error (timeout, unreachable, etc.)
     return { allow: false };
   }
 }
@@ -188,7 +206,7 @@ async function authenticate(req, res, next) {
       groups: decoded.groups || [],
       name: decoded.name,
       clearance_level: decoded.realm_access?.roles?.includes('admin') ? 3 :
-                       decoded.realm_access?.roles?.includes('developer') ? 2 : 1
+        decoded.realm_access?.roles?.includes('developer') ? 2 : 1
     };
     next();
   } catch (error) {
