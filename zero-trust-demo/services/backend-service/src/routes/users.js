@@ -6,7 +6,7 @@ const { authenticate } = require('../middlewares/auth');
 const { authorize, dataAccessControl } = require('../middlewares/authorize');
 const { auditLog } = require('../middlewares/audit');
 const { dbQueryDuration } = require('../middlewares/metrics');
-const pool = require('../services/database');
+const { getPool } = require('../services/database');
 const logger = require('../services/logger');
 
 const router = Router();
@@ -20,7 +20,7 @@ router.get('/',
     async (req, res) => {
         const start = Date.now();
         try {
-            const result = await pool.query(
+            const result = await getPool().query(
                 'SELECT id, name, email, role, created_at FROM users LIMIT 100'
             );
             dbQueryDuration.labels('select').observe((Date.now() - start) / 1000);
@@ -50,7 +50,7 @@ router.get('/:id',
     auditLog('get_user'),
     async (req, res) => {
         try {
-            const result = await pool.query(
+            const result = await getPool().query(
                 'SELECT id, name, email, role, created_at FROM users WHERE id = $1',
                 [req.params.id]
             );
@@ -83,7 +83,7 @@ router.post('/',
 
         try {
             const { name, email, role } = req.body;
-            const result = await pool.query(
+            const result = await getPool().query(
                 'INSERT INTO users (name, email, role) VALUES ($1, $2, $3) RETURNING id, name, email, role, created_at',
                 [name, email, role]
             );

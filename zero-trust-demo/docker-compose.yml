@@ -259,7 +259,14 @@ services:
       # OPA runs as a sidecar — localhost call, sub-millisecond authz.
       - OPA_URL=http://localhost:8181
       - SERVICE_NAME=backend-service
-      - DATABASE_URL=postgresql://app:${POSTGRES_APP_PASSWORD}@postgres-app:5432/appdb
+      # Non-secret DB connection params (host, port, dbname, user).
+      # The password is fetched from Vault at bootstrap — not injected here.
+      - DB_HOST=postgres-app
+      - DB_PORT=5432
+      - DB_NAME=appdb
+      - DB_USER=app
+      # DATABASE_URL intentionally omitted — backend-service pulls its own
+      # DB credentials from Vault at startup via getSecret('apps/backend-service').
     networks:
       - internal
       - data

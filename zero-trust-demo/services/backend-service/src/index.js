@@ -3,11 +3,14 @@
 /**
  * Zero-Trust Backend Service — Entry Point
  *
- * Responsibilities of this file:
- *   1. Bootstrap Express with security and observability middleware
- *   2. Mount route modules
- *   3. Initialise the database schema
- *   4. Start listening
+ * Boot sequence (mirrors auth-service bootstrap pattern):
+ *   1. Validate VAULT_TOKEN is present (fail fast — done in config/index.js).
+ *   2. bootstrap(): fetch DB password from Vault, build connection string in
+ *      memory, initialise the pg Pool via initDb().
+ *   3. Start listening ONLY after the pool is ready.
+ *
+ * DATABASE_URL is NOT injected as an environment variable into this container.
+ * The password never appears in docker inspect, crash dumps, or /proc/self/environ.
  *
  * Business logic lives in routes/; auth in middlewares/; infrastructure in services/.
  */
@@ -18,11 +21,12 @@ const cors = require('cors');
 const morgan = require('morgan');
 const { v4: uuidv4 } = require('uuid');
 
-// Config (includes startup guards — will exit(1) if secrets missing)
+// Config (includes VAULT_TOKEN startup guard — will exit(1) if missing)
 const config = require('./config');
 
-// Services
-const pool = require('./services/database');
+// Services — initDb() called in bootstrap(), not here.
+const { initDb } = require('./services/database');
+const { getSecret } = require('./services/vault');
 const logger = require('./services/logger');
 
 // Middlewares
@@ -56,7 +60,9 @@ app.use(metricsMiddleware);
 
 app.get('/health', async (_req, res) => {
   try {
-    await pool.query('SELECT 1');
+    // getPool() throws if boot hasn't completed — surface as 503.
+    const { getPool } = require('./services/database');
+    await getPool().query('SELECT 1');
     res.json({ status: 'healthy', service: config.serviceName });
   } catch {
     res.status(503).json({ status: 'unhealthy', error: 'Database connection failed' });
@@ -73,7 +79,7 @@ app.get('/metrics', async (_req, res) => {
 app.use('/api/v1/users', usersRouter);
 app.use('/api/v1/products', productsRouter);
 app.use('/api/v1/orders', ordersRouter);
-app.use('/api/v1', adminRouter);       // mounts /config and /audit
+app.use('/api/v1', adminRouter);  // mounts /config and /audit
 
 // ── Global error handler ───────────────────────────────────────────────────
 
@@ -83,14 +89,49 @@ app.use((err, req, res, _next) => {
   res.status(500).json({ error: 'Internal server error', requestId: req.requestId });
 });
 
-// ── Server start ───────────────────────────────────────────────────────────
-// Schema management is handled exclusively by Knex migrations
-// (see /db/migrations/). Migrations are run as a separate init-container step
-// before this process starts — never inside application code.
+// ── Bootstrap: fetch secrets → init DB → start server ─────────────────────
 
-app.listen(config.port, () => {
-  logger.info('Backend service started', { port: config.port });
-});
+/**
+ * Fetch the database password from Vault, construct the connection string
+ * in memory, initialise the pg Pool, then start listening.
+ *
+ * The application never starts if Vault is unreachable or the secret is
+ * absent — this is the intended "fail fast" behaviour.
+ */
+async function bootstrap() {
+  logger.info('Fetching secrets from Vault...');
+
+  let secrets;
+  try {
+    secrets = await getSecret('apps/backend-service');
+  } catch (error) {
+    logger.error('FATAL: Could not load secrets from Vault', { error: error.message });
+    process.exit(1);
+  }
+
+  const dbPassword = secrets?.db_password;
+  if (!dbPassword) {
+    logger.error('FATAL: db_password not found in Vault at apps/backend-service');
+    process.exit(1);
+  }
+
+  // Build the connection string purely in memory — never in an env var.
+  const connectionString =
+    `postgresql://${config.database.user}:${dbPassword}` +
+    `@${config.database.host}:${config.database.port}/${config.database.name}`;
+
+  logger.info('Initialising database pool...');
+  initDb(connectionString);
+  logger.info('Database pool ready.');
+
+  // Schema is managed by Knex migrations (db-migrate init container).
+  // Never run DDL here.
+
+  app.listen(config.port, () => {
+    logger.info('Backend service started', { port: config.port });
+  });
+}
+
+bootstrap();
 
 module.exports = app;
-
