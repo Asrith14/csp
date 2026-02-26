@@ -83,37 +83,14 @@ app.use((err, req, res, _next) => {
   res.status(500).json({ error: 'Internal server error', requestId: req.requestId });
 });
 
-// ── Database init + server start ───────────────────────────────────────────
+// ── Server start ───────────────────────────────────────────────────────────
+// Schema management is handled exclusively by Knex migrations
+// (see /db/migrations/). Migrations are run as a separate init-container step
+// before this process starts — never inside application code.
 
-async function init() {
-  try {
-    await pool.query(`
-      CREATE TABLE IF NOT EXISTS users (
-        id         SERIAL PRIMARY KEY,
-        name       VARCHAR(100) NOT NULL,
-        email      VARCHAR(255) UNIQUE NOT NULL,
-        role       VARCHAR(50)  NOT NULL DEFAULT 'viewer',
-        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-      )
-    `);
-    await pool.query(`
-      INSERT INTO users (name, email, role) VALUES
-        ('Admin User',     'admin@zerotrust.local',   'admin'),
-        ('Developer User', 'dev@zerotrust.local',     'developer'),
-        ('Viewer User',    'viewer@zerotrust.local',  'viewer')
-      ON CONFLICT (email) DO NOTHING
-    `);
-    logger.info('Database initialised');
-  } catch (error) {
-    logger.error('Database init error', { error: error.message });
-    // Non-fatal: service still starts; health check will surface DB issues.
-  }
-
-  app.listen(config.port, () => {
-    logger.info('Backend service started', { port: config.port });
-  });
-}
-
-init();
+app.listen(config.port, () => {
+  logger.info('Backend service started', { port: config.port });
+});
 
 module.exports = app;
+

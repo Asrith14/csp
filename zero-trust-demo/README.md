@@ -1,6 +1,9 @@
 # Zero-Trust Security Architecture Demo
 
-A comprehensive demonstration of Zero-Trust Security principles for hybrid and multi-cloud networks, running entirely in Docker.
+> **Infrastructure as Code**: The cloud infrastructure (`/infrastructure`) is built with **AWS CDK (TypeScript)**, not Terraform.
+> The Docker stack in this directory demonstrates the same Zero-Trust principles locally.
+
+A comprehensive demonstration of Zero-Trust Security principles, running entirely in Docker.
 
 ## 🎯 Overview
 
@@ -91,14 +94,14 @@ docker compose up -d
 
 | Service | URL | Credentials |
 |---------|-----|-------------|
-| **Frontend Dashboard** | http://localhost:3000 | - |
-| **Keycloak Admin** | http://localhost:8080/admin | admin / admin |
-| **Vault UI** | http://localhost:8200 | Token: `root-token-zero-trust` |
-| **Kong Admin** | http://localhost:8001 | - |
-| **API Gateway** | http://localhost:8000 | - |
-| **Grafana** | http://localhost:3001 | admin / admin |
-| **Prometheus** | http://localhost:9090 | - |
-| **Kibana** | http://localhost:5601 | - |
+| **Frontend Dashboard** | http://localhost:3000 | — |
+| **Keycloak Admin** | http://localhost:8080/admin | Set via `KEYCLOAK_ADMIN_PASSWORD` in `.env` |
+| **Vault UI** | http://localhost:8200 | Token from `VAULT_DEV_ROOT_TOKEN` in `.env` |
+| **Kong Admin** | http://localhost:8001 | — |
+| **API Gateway** | http://localhost:8000 | — |
+| **Grafana** | http://localhost:3001 | admin / set via `GF_SECURITY_ADMIN_PASSWORD` in `.env` |
+| **Prometheus** | http://localhost:9090 | — |
+| **Kibana** | http://localhost:5601 | — |
 
 ### Test Users
 

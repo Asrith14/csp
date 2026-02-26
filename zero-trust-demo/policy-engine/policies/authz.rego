@@ -42,64 +42,55 @@ allow if {
 # Developers can access development resources
 allow if {
     "developer" in input.user.roles
-    is_allowed_developer_path(input.resource.path)
+    is_allowed_developer_path
 }
 
 # Viewers have read-only access
 allow if {
     "viewer" in input.user.roles
     input.resource.method == "GET"
-    not is_sensitive_path(input.resource.path)
+    not is_sensitive_path
 }
 
 # ============================================
-# Path-Based Policies
+# Path Segment Helpers
 # ============================================
+#
+# Split the incoming path on "/" to produce a segment array.
+# Example: "/api/v1/users/123" → ["", "api", "v1", "users", "123"]
+# Evaluating segments natively prevents string-manipulation bypass attacks.
 
-# Allowed path prefixes for developers.
-# Uses startswith so /api/v1/users/123 is covered by "/api/v1/users".
-# Order matters for security: more-specific prefixes should be listed first.
-allowed_developer_prefixes := [
-    "/api/v1/users",
-    "/api/v1/products",
-    "/api/v1/orders",
-    "/api/v1/debug",
-    "/api/v1/logs"
-]
+path_segments := split(input.resource.path, "/")
 
-is_allowed_developer_path(path) if {
-    some prefix in allowed_developer_prefixes
-    startswith(path, prefix)
-    # Prevent path traversal: /api/v1/userssecret must not match /api/v1/users
-    # The character after the prefix must be '/', a query marker '?', or end of string.
-    suffix := substring(path, count(prefix), -1)
-    suffix == ""
-} else if {
-    some prefix in allowed_developer_prefixes
-    startswith(path, concat("", [prefix, "/"]))
+# True when the request targets the versioned API prefix.
+is_api_v1 if {
+    path_segments[1] == "api"
+    path_segments[2] == "v1"
 }
 
-# Sensitive path prefixes requiring admin — exact check sufficient here
-# because these are leaf paths, not collection prefixes.
-sensitive_path_prefixes := [
-    "/api/v1/admin",
-    "/api/v1/secrets",
-    "/api/v1/audit",
-    "/api/v1/config"
-]
+# Developer-accessible collection names under /api/v1/
+developer_collections := {"users", "products", "orders", "debug", "logs"}
 
-is_sensitive_path(path) if {
-    some prefix in sensitive_path_prefixes
-    startswith(path, prefix)
+# A path is allowed for developers when it sits under /api/v1/<collection>[/<id>]
+is_allowed_developer_path if {
+    is_api_v1
+    developer_collections[path_segments[3]]
 }
 
-# Public paths (no auth required) — exact match is correct;
-# these are known, fixed endpoints, not collections.
+# Sensitive collection names requiring admin — exact segment, no sub-paths.
+sensitive_collections := {"admin", "secrets", "audit", "config"}
+
+is_sensitive_path if {
+    is_api_v1
+    sensitive_collections[path_segments[3]]
+}
+
+# Public paths — exact full-path match is correct here; these are fixed endpoints.
 public_path_set := {
     "/health",
     "/metrics",
     "/auth/login",
-    "/auth/register"
+    "/auth/register",
 }
 
 # Allow public paths without authentication
@@ -132,10 +123,10 @@ is_business_hours if {
 # Service-to-Service Authorization
 # ============================================
 
-# Service accounts can access inter-service endpoints
+# Service accounts can access /internal/* endpoints
 allow if {
     "service-account" in input.user.roles
-    startswith(input.resource.path, "/internal/")
+    path_segments[1] == "internal"
     valid_service_token
 }
 
@@ -168,9 +159,10 @@ blacklisted_ips := {
     "10.0.0.1",  # Example blocked IP
 }
 
-# Allow only whitelisted IPs for admin endpoints
+# Allow only whitelisted IPs for admin endpoints (segment-based, not string prefix)
 allow if {
-    startswith(input.resource.path, "/api/v1/admin")
+    is_api_v1
+    path_segments[3] == "admin"
     "admin" in input.user.roles
     admin_whitelisted_ips[input.context.ip]
 }
@@ -187,7 +179,7 @@ admin_whitelisted_ips := {
 
 # Determine if request should be logged
 audit_log if {
-    is_sensitive_path(input.resource.path)
+    is_sensitive_path
 }
 
 audit_log if {

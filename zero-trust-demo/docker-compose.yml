@@ -230,6 +230,24 @@ services:
       timeout: 5s
       retries: 5
 
+  # Schema migration init container — runs before backend-service boots.
+  # Knex will apply all pending migrations and exit cleanly.
+  # Never run DDL inside application startup code.
+  db-migrate:
+    build:
+      context: ./services/backend-service
+      dockerfile: Dockerfile
+    container_name: zt-db-migrate
+    command: ["npx", "knex", "migrate:latest"]
+    environment:
+      - DATABASE_URL=postgresql://app:${POSTGRES_APP_PASSWORD}@postgres-app:5432/appdb
+    networks:
+      - data
+    depends_on:
+      postgres-app:
+        condition: service_healthy
+    restart: "no"  # exits after migrations complete
+
   backend-service:
     build:
       context: ./services/backend-service
@@ -238,18 +256,43 @@ services:
     environment:
       - VAULT_ADDR=http://vault:8200
       - VAULT_TOKEN=${VAULT_DEV_ROOT_TOKEN}
-      - OPA_URL=http://opa:8181
+      # OPA runs as a sidecar — localhost call, sub-millisecond authz.
+      - OPA_URL=http://localhost:8181
       - SERVICE_NAME=backend-service
       - DATABASE_URL=postgresql://app:${POSTGRES_APP_PASSWORD}@postgres-app:5432/appdb
     networks:
       - internal
       - data
     depends_on:
+      - db-migrate
       - vault
-      - opa
       - postgres-app
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:3001/health"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # OPA sidecar — shares network namespace with backend-service.
+  # Authorization calls hit localhost:8181, eliminating the network hop.
+  # In Kubernetes, this maps to an OPA container in the same pod.
+  opa-sidecar:
+    image: openpolicyagent/opa:latest-rootless
+    container_name: zt-opa-sidecar
+    command:
+      - "run"
+      - "--server"
+      - "--addr=0.0.0.0:8181"
+      - "--log-level=info"
+      - "--set=decision_logs.console=true"
+      - "/policies"
+    volumes:
+      - ./policy-engine/policies:/policies
+    network_mode: "service:backend-service"  # shares backend-service network namespace
+    depends_on:
+      - backend-service
+    healthcheck:
+      test: ["CMD", "wget", "-q", "--spider", "http://localhost:8181/health"]
       interval: 10s
       timeout: 5s
       retries: 5
