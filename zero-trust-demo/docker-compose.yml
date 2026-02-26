@@ -103,6 +103,7 @@ services:
       - vault_data:/vault/data
       - ./secrets/vault-config:/vault/config
       - ./secrets/policies:/vault/policies
+      - ./secrets/vault-init.sh:/vault-init.sh
     networks:
       - dmz
       - internal
@@ -111,6 +112,27 @@ services:
       interval: 10s
       timeout: 5s
       retries: 5
+
+  # One-shot init container: seeds secrets into Vault before services boot.
+  # auth-service needs: apps/auth-service.keycloak_client_secret
+  # backend-service needs: apps/backend-service.db_password
+  vault-init:
+    image: hashicorp/vault:1.15
+    container_name: zt-vault-init
+    command: ["sh", "/vault-init.sh"]
+    environment:
+      VAULT_ADDR: http://vault:8200
+      VAULT_DEV_ROOT_TOKEN: ${VAULT_DEV_ROOT_TOKEN}
+      POSTGRES_APP_PASSWORD: ${POSTGRES_APP_PASSWORD}
+    volumes:
+      - ./secrets/vault-init.sh:/vault-init.sh
+    networks:
+      - internal
+    depends_on:
+      vault:
+        condition: service_healthy
+    restart: "no"
+
 
   # ============================================
   # API GATEWAY - Kong with OIDC
@@ -223,6 +245,7 @@ services:
     depends_on:
       - keycloak
       - vault
+      - vault-init
       - opa
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:3000/health"]
@@ -273,6 +296,7 @@ services:
     depends_on:
       - db-migrate
       - vault
+      - vault-init
       - postgres-app
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:3001/health"]
